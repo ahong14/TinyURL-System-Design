@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface URLRepository extends MongoRepository<URL, String> {
     // method to find document by short url
     URL findByShortUrl(String shortUrl);
+
+    // method to find document by original url
+    URL findByOriginalUrl(String originalUrl);
 }

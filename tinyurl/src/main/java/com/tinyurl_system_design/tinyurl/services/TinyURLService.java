@@ -1,9 +1,12 @@
 package com.tinyurl_system_design.tinyurl.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tinyurl_system_design.tinyurl.models.URL;
 
-public interface TinyURLService {
-    URL createShortUrl(String originalUrl);
+import java.security.NoSuchAlgorithmException;
 
-    URL getOriginalUrl(String shortUrl);
+public interface TinyURLService {
+    URL createShortUrl(String originalUrl) throws NoSuchAlgorithmException;
+
+    URL getOriginalUrl(String shortUrl) throws JsonProcessingException;
 }

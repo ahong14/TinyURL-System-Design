@@ -1,7 +1,7 @@
 package com.tinyurl_system_design.tinyurl.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tinyurl_system_design.tinyurl.models.URL;
-import com.tinyurl_system_design.tinyurl.services.TinyURLService;
 import com.tinyurl_system_design.tinyurl.services.TinyURLServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +22,7 @@ public class TinyURLController {
 
     // GET request to redirect to original url from short url
     @GetMapping(path = "/{shortUrl}")
-    public ResponseEntity getOriginalUrl(@PathVariable String shortUrl) {
+    public ResponseEntity getOriginalUrl(@PathVariable String shortUrl) throws JsonProcessingException {
         // find mapping of short url to original url
         URL originalUrl = this.tinyURLService.getOriginalUrl(shortUrl);
 
