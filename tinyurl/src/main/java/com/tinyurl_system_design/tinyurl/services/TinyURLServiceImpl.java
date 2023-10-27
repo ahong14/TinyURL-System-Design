@@ -6,23 +6,26 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tinyurl_system_design.tinyurl.models.URL;
 import com.tinyurl_system_design.tinyurl.repositories.URLRepository;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import jakarta.annotation.PostConstruct;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import net.devh.boot.grpc.client.inject.GrpcClientBean;
+import net.devh.boot.grpc.examples.lib.GetGeneratedKeyRequest;
+import net.devh.boot.grpc.examples.lib.TinyURLProtoServiceGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.NoSuchElementException;
 
 @Service
 public class TinyURLServiceImpl implements TinyURLService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private URLRepository urlRepository;
@@ -30,37 +33,27 @@ public class TinyURLServiceImpl implements TinyURLService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    // gRPC client
+    @GrpcClient("TinyURL Key Generator")
+    private TinyURLProtoServiceGrpc.TinyURLProtoServiceBlockingStub tinyURLProtoServiceBlockingStub;
 
     /**
      * Method to create short url mapping
-     * @param originalUrl
-     * @return
-     * @throws NoSuchAlgorithmException
+     * @param originalUrl - original URL being shortened
+     * @return - generated key string
      */
-    private String shortenOriginalUrl(String originalUrl) throws NoSuchAlgorithmException {
-        final String uri = "http://localhost:8081/api/keyService";
-
-        RestTemplate restTemplate = new RestTemplate();
-        String result = restTemplate.getForObject(uri, String.class);
-
-        System.out.println("result: " + result);
-
-        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        messageDigest.update(originalUrl.getBytes());
-        byte[] digest = messageDigest.digest();
-        String hash = Base64.getEncoder().encodeToString(digest);
-        logger.info("hash: " + hash);
-        return hash.substring(0, 7);
+    private String shortenOriginalUrl(String originalUrl)  {
+        GetGeneratedKeyRequest getGeneratedKeyRequest = GetGeneratedKeyRequest.newBuilder().setLongUrl(originalUrl).build();
+        return tinyURLProtoServiceBlockingStub.getGeneratedKey(getGeneratedKeyRequest).getGeneratedKey();
     }
 
     /**
      *
-     * @param originalUrl
-     * @return
+     * @param originalUrl - original URL being shortened
+     * @return - URL object created
      */
     @Override
-    public URL createShortUrl(String originalUrl) throws NoSuchAlgorithmException {
+    public URL createShortUrl(String originalUrl) {
         // determine if originalUrl already has mapping
         URL existingOriginalUrl = this.urlRepository.findByOriginalUrl(originalUrl);
         if (existingOriginalUrl != null) {
