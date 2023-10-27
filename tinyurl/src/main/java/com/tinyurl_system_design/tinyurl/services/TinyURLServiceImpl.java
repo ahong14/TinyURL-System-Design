@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +39,13 @@ public class TinyURLServiceImpl implements TinyURLService {
      * @throws NoSuchAlgorithmException
      */
     private String shortenOriginalUrl(String originalUrl) throws NoSuchAlgorithmException {
+        final String uri = "http://localhost:8081/api/keyService";
+
+        RestTemplate restTemplate = new RestTemplate();
+        String result = restTemplate.getForObject(uri, String.class);
+
+        System.out.println("result: " + result);
+
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         messageDigest.update(originalUrl.getBytes());
         byte[] digest = messageDigest.digest();

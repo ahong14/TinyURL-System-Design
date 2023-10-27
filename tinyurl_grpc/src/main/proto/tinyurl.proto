@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package net.devh.boot.grpc.tinyurl_proto;
+
+option java_multiple_files = true;
+option java_package = "net.devh.boot.grpc.examples.lib";
+option java_outer_classname = "TinyURLProto";
+
+service TinyURLProtoService {
+  // Sends proto request message to get generated key
+  rpc GetGeneratedKey (GetGeneratedKeyRequest) returns (GeneratedKeyResponse) {
+  }
+}
+
+// The request message containing the user's name.
+message GetGeneratedKeyRequest {
+  string longUrl = 1;
+}
+
+// The response message containing the greetings
+message GeneratedKeyResponse {
+  string generatedKey = 1;
+}
