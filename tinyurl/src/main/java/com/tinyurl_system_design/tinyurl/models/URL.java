@@ -3,7 +3,6 @@ package com.tinyurl_system_design.tinyurl.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Document(collection = "urls")
@@ -16,6 +15,8 @@ public class URL {
     private String shortUrl;
 
     private String completeShortUrl;
+
+    private String userId;
 
     private LocalDateTime dateCreated;
 
@@ -86,12 +87,22 @@ public class URL {
         this.completeShortUrl = completeShortUrl;
     }
 
-    @java.lang.Override
-    public java.lang.String toString() {
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
         return "URL{" +
                 "id='" + id + '\'' +
                 ", originalUrl='" + originalUrl + '\'' +
                 ", shortUrl='" + shortUrl + '\'' +
+                ", completeShortUrl='" + completeShortUrl + '\'' +
+                ", userId='" + userId + '\'' +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
                 '}';

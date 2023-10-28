@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
-
-
 /**
  * Controller that handles creating/modifying short urls from original urls
  */
 @RestController
 @RequestMapping(path = "/api/url")
 public class TinyURLApiController {
-    @Autowired
     private TinyURLService tinyURLService;
+
+    @Autowired
+    TinyURLApiController(TinyURLService tinyURLService) {
+        this.tinyURLService = tinyURLService;
+    }
 
     // POST route to create short urls from original urls
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createShortUrl(@RequestBody URLRequest urlRequest) throws UnknownHostException {
-        URL createdUrl = this.tinyURLService.createShortUrl(urlRequest.getOriginalUrl());
+    public ResponseEntity createShortUrl(@RequestBody URLRequest urlRequest) {
+        URL createdUrl = this.tinyURLService.createShortUrl(urlRequest.getOriginalUrl(), urlRequest.getUserId());
         return ResponseEntity.ok(createdUrl);
     }
 }

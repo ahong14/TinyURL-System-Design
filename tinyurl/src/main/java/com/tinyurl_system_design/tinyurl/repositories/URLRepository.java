@@ -9,6 +9,6 @@ public interface URLRepository extends MongoRepository<URL, String> {
     // method to find document by short url
     URL findByShortUrl(String shortUrl);
 
-    // method to find document by original url
-    URL findByOriginalUrl(String originalUrl);
+    // find url by original url and user id
+    URL findURLByOriginalUrlAndUserId(String originalUrl, String userId);
 }

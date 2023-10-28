@@ -17,7 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,9 +52,9 @@ public class TinyURLServiceImpl implements TinyURLService {
      * @return - URL object created
      */
     @Override
-    public URL createShortUrl(String originalUrl) throws UnknownHostException {
-        // determine if originalUrl already has mapping
-        URL existingOriginalUrl = this.urlRepository.findByOriginalUrl(originalUrl);
+    public URL createShortUrl(String originalUrl, String userId) {
+        // determine if originalUrl already has mapping for user
+        URL existingOriginalUrl = this.urlRepository.findURLByOriginalUrlAndUserId(originalUrl, userId);
         if (existingOriginalUrl != null) {
             String errorMessage = "short url mapping found for original url: " + originalUrl;
             throw new IllegalArgumentException(errorMessage);
@@ -69,6 +68,7 @@ public class TinyURLServiceImpl implements TinyURLService {
         String completeShortUrl = hostUrl + "/" + shortUrl;
         URL createUrl = new URL(originalUrl, shortUrl, currentDate, currentDate);
         createUrl.setCompleteShortUrl(completeShortUrl);
+        createUrl.setUserId(userId);
         return this.urlRepository.save(createUrl);
     }
 

@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class TinyURLController {
-    @Autowired
     private TinyURLServiceImpl tinyURLService;
+
+    @Autowired
+    TinyURLController(TinyURLServiceImpl tinyURLService) {
+        this.tinyURLService = tinyURLService;
+    }
 
     // GET request to redirect to original url from short url
     @GetMapping(path = "/{shortUrl}")
