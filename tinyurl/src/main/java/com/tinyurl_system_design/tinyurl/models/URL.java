@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Document(collection = "urls")
 public class URL {
@@ -15,11 +15,13 @@ public class URL {
 
     private String shortUrl;
 
-    private LocalDate dateCreated;
+    private String completeShortUrl;
 
-    private LocalDate dateUpdated;
+    private LocalDateTime dateCreated;
 
-    public URL(String id, String originalUrl, String shortUrl, LocalDate dateCreated, LocalDate dateUpdated) {
+    private LocalDateTime dateUpdated;
+
+    public URL(String id, String originalUrl, String shortUrl, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
@@ -27,7 +29,7 @@ public class URL {
         this.dateUpdated = dateUpdated;
     }
 
-    public URL(String originalUrl, String shortUrl, LocalDate dateCreated, LocalDate dateUpdated) {
+    public URL(String originalUrl, String shortUrl, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
         this.dateCreated = dateCreated;
@@ -60,20 +62,28 @@ public class URL {
         this.shortUrl = shortUrl;
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
-    public LocalDate getDateUpdated() {
+    public LocalDateTime getDateUpdated() {
         return dateUpdated;
     }
 
-    public void setDateUpdated(LocalDate dateUpdated) {
+    public void setDateUpdated(LocalDateTime dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public String getCompleteShortUrl() {
+        return completeShortUrl;
+    }
+
+    public void setCompleteShortUrl(String completeShortUrl) {
+        this.completeShortUrl = completeShortUrl;
     }
 
     @java.lang.Override

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 
 
@@ -25,7 +26,7 @@ public class TinyURLApiController {
 
     // POST route to create short urls from original urls
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createShortUrl(@RequestBody URLRequest urlRequest) throws NoSuchAlgorithmException {
+    public ResponseEntity createShortUrl(@RequestBody URLRequest urlRequest) throws UnknownHostException {
         URL createdUrl = this.tinyURLService.createShortUrl(urlRequest.getOriginalUrl());
         return ResponseEntity.ok(createdUrl);
     }

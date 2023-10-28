@@ -4,13 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.tinyurl_system_design.tinyurl.models.URL;
 import com.tinyurl_system_design.tinyurl.repositories.URLRepository;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import jakarta.annotation.PostConstruct;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import net.devh.boot.grpc.client.inject.GrpcClientBean;
 import net.devh.boot.grpc.examples.lib.GetGeneratedKeyRequest;
 import net.devh.boot.grpc.examples.lib.TinyURLProtoServiceGrpc;
 import org.slf4j.Logger;
@@ -18,9 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.UnknownHostException;
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 
 @Service
@@ -53,18 +53,22 @@ public class TinyURLServiceImpl implements TinyURLService {
      * @return - URL object created
      */
     @Override
-    public URL createShortUrl(String originalUrl) {
+    public URL createShortUrl(String originalUrl) throws UnknownHostException {
         // determine if originalUrl already has mapping
         URL existingOriginalUrl = this.urlRepository.findByOriginalUrl(originalUrl);
         if (existingOriginalUrl != null) {
             String errorMessage = "short url mapping found for original url: " + originalUrl;
             throw new IllegalArgumentException(errorMessage);
         }
-        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentDate = LocalDateTime.now();
         String shortUrl = this.shortenOriginalUrl(originalUrl);
         logger.info("original url: " + originalUrl);
-        logger.info("short url base64 encoded: " + shortUrl);
+        logger.info("short url: " + shortUrl);
+        String hostUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        logger.info("host url: " + hostUrl);
+        String completeShortUrl = hostUrl + "/" + shortUrl;
         URL createUrl = new URL(originalUrl, shortUrl, currentDate, currentDate);
+        createUrl.setCompleteShortUrl(completeShortUrl);
         return this.urlRepository.save(createUrl);
     }
 
@@ -95,7 +99,7 @@ public class TinyURLServiceImpl implements TinyURLService {
             throw new NoSuchElementException(errorMessage);
         }
         // update cache key to 1 hour
-        ObjectWriter ow = new ObjectMapper().registerModule(new JavaTimeModule()).writer().withDefaultPrettyPrinter();
+        ObjectWriter ow = new ObjectMapper().registerModule(new JavaTimeModule().addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ISO_DATE_TIME))).writer().withDefaultPrettyPrinter();
         String originalUrlJson = ow.writeValueAsString(originalUrl);
         redisTemplate.opsForValue().set(shortUrl, originalUrlJson, Duration.ofHours(1));
         return originalUrl;
