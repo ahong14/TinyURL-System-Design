@@ -1,6 +1,6 @@
 package com.tinyurl_system_design.tinyurl.controllers;
 
-import com.tinyurl_system_design.tinyurl.models.URL;
+import com.tinyurl_system_design.tinyurl.models.TinyURL;
 import com.tinyurl_system_design.tinyurl.models.URLRequest;
 import com.tinyurl_system_design.tinyurl.services.TinyURLService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/api/url")
 public class TinyURLApiController {
-    private TinyURLService tinyURLService;
+    private final TinyURLService tinyURLService;
 
     @Autowired
     TinyURLApiController(TinyURLService tinyURLService) {
         this.tinyURLService = tinyURLService;
     }
 
-    // POST route to create short urls from original urls
+    /**
+     * POST route to create short urls from original urls
+     * @param urlRequest - contains request params needed to create shortened url, original url and user id
+     * @return - return created URL object
+     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createShortUrl(@RequestBody URLRequest urlRequest) {
-        URL createdUrl = this.tinyURLService.createShortUrl(urlRequest.getOriginalUrl(), urlRequest.getUserId());
+    public ResponseEntity<TinyURL> createShortUrl(@RequestBody URLRequest urlRequest) {
+        TinyURL createdUrl = this.tinyURLService.createShortUrl(urlRequest.getOriginalUrl(), urlRequest.getUserId());
         return ResponseEntity.ok(createdUrl);
     }
 }

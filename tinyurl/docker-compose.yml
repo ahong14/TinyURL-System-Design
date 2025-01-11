@@ -1,18 +1,21 @@
 version: "3.8"
 
 services:
-  mongo:
-    image: mongo:6.0
+  postgres:
+    image: postgres:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      POSTGRES_USER: tinyurl
+      POSTGRES_PASSWORD: tinyurl
+      POSTGRES_DB: tinyurl
     ports:
-      - 27017:27017
+      - 5432:5432
 
   redis:
     image: redis:latest
     ports:
       - 6379:6379
+    # init redis counter to 1,000,000,000 to generate 6 letter base62 result
+    command: redis-server --appendonly yes && redis-cli -x SET url_counter 1000000000
 networks:
   tinyurl:
     name: tinyurl
