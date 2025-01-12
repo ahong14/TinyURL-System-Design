@@ -31,6 +31,8 @@ public class TinyURLServiceImpl implements TinyURLService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+    private final String GLOBAL_COUNTER_KEY = "url_counter";
+
     public TinyURLServiceImpl(TinyURLRepository urlRepository, RedisTemplate redisTemplate) {
         this.urlRepository = urlRepository;
         this.redisTemplate = redisTemplate;
@@ -44,7 +46,7 @@ public class TinyURLServiceImpl implements TinyURLService {
     @Override
     public String shortenUrl(String originalUrl) {
         // get counter value from global redis key
-        String globalCounter = this.redisTemplate.opsForValue().get("url_counter");
+        String globalCounter = this.redisTemplate.opsForValue().get(GLOBAL_COUNTER_KEY);
         if (globalCounter == null) {
             throw new RuntimeException("Redis counter returned invalid value for key");
         }
@@ -83,10 +85,12 @@ public class TinyURLServiceImpl implements TinyURLService {
 
         // add host url and base62 short url to create full URL
         String completeShortUrl = hostUrl + "/" + shortUrl;
-        TinyURL createUrl = new TinyURL(originalUrl, shortUrl, currentDate, currentDate, expirationDate);
+        TinyURL createUrl = new TinyURL(originalUrl, shortUrl, currentDate, expirationDate);
         createUrl.setCompleteShortUrl(completeShortUrl);
         createUrl.setUserId(userId);
-        return this.urlRepository.save(createUrl);
+        this.urlRepository.save(createUrl);
+        this.redisTemplate.opsForValue().increment(GLOBAL_COUNTER_KEY);
+        return createUrl;
     }
 
     /**

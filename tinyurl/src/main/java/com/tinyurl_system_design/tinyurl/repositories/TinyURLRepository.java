@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface TinyURLRepository extends JpaRepository<TinyURL, String> {
+public interface TinyURLRepository extends JpaRepository<TinyURL, UUID> {
     TinyURL findByShortUrl(String shortUrl);
     TinyURL findByOriginalUrlAndId(String originalUrl, UUID userId);
 }

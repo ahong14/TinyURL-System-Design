@@ -43,10 +43,12 @@ public class TinyURL {
         this.expirationTime = expirationTime;
     }
 
-    public TinyURL(String originalUrl, String shortUrl, LocalDateTime currentDate, LocalDateTime currentDate1) {
-    }
-
-    public TinyURL(String originalUrl, String shortUrl, LocalDateTime currentDate, LocalDateTime currentDate1, LocalDateTime expirationDate) {
+    public TinyURL(String originalUrl, String shortUrl, LocalDateTime currentDate, LocalDateTime expirationDate) {
+        this.originalUrl = originalUrl;
+        this.shortUrl = shortUrl;
+        this.dateCreated = currentDate;
+        this.dateUpdated = currentDate;
+        this.expirationTime = expirationDate;
     }
 
     public UUID getId() {

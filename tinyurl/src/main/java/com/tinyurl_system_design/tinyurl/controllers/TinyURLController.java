@@ -24,7 +24,12 @@ public class TinyURLController {
         this.tinyURLService = tinyURLService;
     }
 
-    // GET request to redirect to original url from short url
+    /**
+     * GET request to redirect to original url from short url
+     * @param shortUrl
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping(path = "/{shortUrl}")
     public ResponseEntity getOriginalUrl(@PathVariable String shortUrl) throws JsonProcessingException {
         // find mapping of short url to original url
