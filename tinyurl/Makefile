@@ -1,4 +1,8 @@
+compile:
+	mvn clean compile
 
+test:
+	mvn clean test
 
 start-docker-containers:
 			docker-compose up -d
