@@ -1,14 +1,18 @@
 package com.tinyurl_system_design.tinyurl.models;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Document(collection = "urls")
-public class URL {
+@Entity
+public class TinyURL {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String originalUrl;
 
@@ -22,28 +26,36 @@ public class URL {
 
     private LocalDateTime dateUpdated;
 
-    public URL(String id, String originalUrl, String shortUrl, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+    private LocalDateTime expirationTime;
+
+    public TinyURL() {
+
+    }
+
+    public TinyURL(UUID id, String originalUrl, String shortUrl, String completeShortUrl, String userId, LocalDateTime dateCreated, LocalDateTime dateUpdated, LocalDateTime expirationTime) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
+        this.completeShortUrl = completeShortUrl;
+        this.userId = userId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.expirationTime = expirationTime;
     }
 
-    public URL(String originalUrl, String shortUrl, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
+    public TinyURL(String originalUrl, String shortUrl, LocalDateTime currentDate, LocalDateTime expirationDate) {
         this.originalUrl = originalUrl;
         this.shortUrl = shortUrl;
-        this.dateCreated = dateCreated;
-        this.dateUpdated = dateUpdated;
+        this.dateCreated = currentDate;
+        this.dateUpdated = currentDate;
+        this.expirationTime = expirationDate;
     }
 
-    public URL() {};
-
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -63,22 +75,6 @@ public class URL {
         this.shortUrl = shortUrl;
     }
 
-    public LocalDateTime getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(LocalDateTime dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public LocalDateTime getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(LocalDateTime dateUpdated) {
-        this.dateUpdated = dateUpdated;
-    }
-
     public String getCompleteShortUrl() {
         return completeShortUrl;
     }
@@ -95,16 +91,41 @@ public class URL {
         this.userId = userId;
     }
 
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalDateTime getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(LocalDateTime dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    public LocalDateTime getExpirationTime() {
+        return expirationTime;
+    }
+
+    public void setExpirationTime(LocalDateTime expirationTime) {
+        this.expirationTime = expirationTime;
+    }
+
     @Override
     public String toString() {
-        return "URL{" +
-                "id='" + id + '\'' +
+        return "TinyURL{" +
+                "id=" + id +
                 ", originalUrl='" + originalUrl + '\'' +
                 ", shortUrl='" + shortUrl + '\'' +
                 ", completeShortUrl='" + completeShortUrl + '\'' +
                 ", userId='" + userId + '\'' +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
+                ", expirationTime=" + expirationTime +
                 '}';
     }
 }
